@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: User-Service
+server:
+  port: 8886
+eureka:
+  #instance:
+   # leaseRenewalIntervalInSeconds: 1
+   # leaseExpirationDurationInSeconds: 3
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8887/eureka
+ 
+ #management:
+  #security:
+   # enabled: false 
