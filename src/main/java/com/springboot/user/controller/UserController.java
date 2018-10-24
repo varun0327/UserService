@@ -25,87 +25,94 @@ import com.springboot.user.dto.User;
 import com.springboot.user.service.UserService;
 
 @RequestMapping(value = "/user")
-
 @RestController
-
 public class UserController {
 
 	@Autowired
-
 	UserService service;
-
+	
 	@RequestMapping(value = "/getByFname/{fname}")
-
 	public ResponseEntity<Response> getByFname(@PathVariable("fname") String fname) {
-
 		Response response = new Response();
-
-		List<User> userList = new ArrayList<User>();
-
-		userList = service.getByFname(fname);
-
-		if (userList.size() > 0) {
-
-			response.setUserList(userList);
-
-			return new ResponseEntity<Response>(response, HttpStatus.OK);
-
-		} else {
-
+		boolean validate=false;
+		try{
+			validate=service.validateFname(fname);
+		}catch(IllegalArgumentException e){
 			List<com.springboot.user.dto.Error> errorList = new ArrayList<>();
-
 			com.springboot.user.dto.Error error = new com.springboot.user.dto.Error();
-
-			error.setStatus("404");
-
-			error.setDescription("No Data Found");
-
+			error.setStatus("400");
+			error.setDescription(e.getMessage());
 			errorList.add(error);
-
 			response.setErrors(errorList);
-
-			return new ResponseEntity<Response>(response, HttpStatus.NOT_FOUND);
-
+			return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
 		}
-
+		
+		if(validate){
+		List<User> userList = new ArrayList<User>();
+		userList = service.getByFname(fname);
+		if (userList.size() > 0) {
+			response.setUserList(userList);
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
+		} else {
+			List<com.springboot.user.dto.Error> errorList = new ArrayList<>();
+			com.springboot.user.dto.Error error = new com.springboot.user.dto.Error();
+			error.setStatus("404");
+			error.setDescription("No Data Found");
+			errorList.add(error);
+			response.setErrors(errorList);
+			return new ResponseEntity<Response>(response, HttpStatus.NOT_FOUND);
+		}
+		}else{
+			List<com.springboot.user.dto.Error> errorList = new ArrayList<>();
+			com.springboot.user.dto.Error error = new com.springboot.user.dto.Error();
+			error.setStatus("400");
+			error.setDescription("BAD REQUEST");
+			errorList.add(error);
+			response.setErrors(errorList);
+			return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@RequestMapping(value = "/getByage/{age}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON)
-
 	public ResponseEntity<Response> getByAge(@PathVariable("age") String age) {
-
 		Response response = new Response();
-
 		List<User> userList = new ArrayList<User>();
-
 		System.out.println(age);
-
-		userList = service.getByAge(age);
-
-		System.out.println("User list size" + userList.size());
-
-		if (userList.size() > 0) {
-
-			response.setUserList(userList);
-
-			return new ResponseEntity<Response>(response, HttpStatus.OK);
-
-		} else {
-
+		boolean validate=false;
+		try{
+			validate=service.validateAge(age);
+		}catch(IllegalArgumentException e){
 			List<com.springboot.user.dto.Error> errorList = new ArrayList<>();
-
 			com.springboot.user.dto.Error error = new com.springboot.user.dto.Error();
-
-			error.setStatus("404");
-
-			error.setDescription("No Data Found");
-
+			error.setStatus("400");
+			error.setDescription(e.getMessage());
 			errorList.add(error);
-
 			response.setErrors(errorList);
-
+			return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
+		}
+		if(validate){
+		userList = service.getByAge(age);
+		System.out.println("User list size" + userList.size());
+		if (userList.size() > 0) {
+			response.setUserList(userList);
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
+		} else {
+			List<com.springboot.user.dto.Error> errorList = new ArrayList<>();
+			com.springboot.user.dto.Error error = new com.springboot.user.dto.Error();
+			error.setStatus("404");
+			error.setDescription("No Data Found");
+			errorList.add(error);
+			response.setErrors(errorList);
 			return new ResponseEntity<Response>(response, HttpStatus.NOT_FOUND);
-
+		}
+		}else{
+			List<com.springboot.user.dto.Error> errorList = new ArrayList<>();
+			com.springboot.user.dto.Error error = new com.springboot.user.dto.Error();
+			error.setStatus("404");
+			error.setDescription("BAD REQUEST");
+			errorList.add(error);
+			response.setErrors(errorList);
+			return new ResponseEntity<Response>(response, HttpStatus.NOT_FOUND);
 		}
 
 	}
